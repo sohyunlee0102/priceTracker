@@ -15,11 +15,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -94,6 +96,15 @@ public class UserService {
         user.setStatus(UserStatus.INACTIVE);
         user.setInactiveDate(LocalDate.now());
         userRepository.save(user);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    @Transactional
+    public void deleteInactiveUsers() {
+        LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
+        List<User> usersToDelete = userRepository.findByStatusAndInactiveDateBefore(UserStatus.INACTIVE, thirtyDaysAgo);
+
+        userRepository.deleteAll(usersToDelete);
     }
 
 }
