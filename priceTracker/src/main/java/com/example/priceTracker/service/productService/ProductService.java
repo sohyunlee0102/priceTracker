@@ -1,10 +1,12 @@
 package com.example.priceTracker.service.productService;
 
 import com.example.priceTracker.domain.product.Product;
+import com.example.priceTracker.dto.productDto.ProductResponseDTO;
 import com.example.priceTracker.repository.productRepository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -17,8 +19,8 @@ public class ProductService {
         return productRepository.findByUserId(userId);
     }
 
-    public Product saveProduct(Product product) {
-        return productRepository.save(product);
+    public ProductResponseDTO.SaveDto saveProduct(Product product) {
+        return new ProductResponseDTO.SaveDto(productRepository.save(product).getId(), LocalDateTime.now());
     }
 
 }
